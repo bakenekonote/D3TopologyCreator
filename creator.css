@@ -14,6 +14,12 @@ path.link.normal {
 
 path.link.down {
   stroke-dasharray: 0, 2 1;
+  stroke: red
+}
+
+path.link.overload {
+  stroke: orange;
+  stroke-width: 3px;
 }
 
 circle {

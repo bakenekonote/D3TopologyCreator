@@ -12,34 +12,55 @@ function find_node(name){
   }
 }
 var nodes = [
-{ name: 'meow' },
-{ name: 'wow' },
-{ name: 'Microsoft'},
-{ name: 'Amazon'},
-{ name: 'Samsung'},
-{ name: 'Apple'}
+{ name: 'U1', type: "ubuntu" },
+{ name: 'U2', type: "ubuntu" },
+{ name: 'R1', type: "mx"},
+{ name: 'R2', type: "mx"},
+{ name: 'R3', type: "mx"},
+{ name: 'R4', type: "mx"},
+{ name: 'U3', type: "ubuntu"}
 ];
 
 var links = [{
-  source: find_node('Microsoft'),
-  target: find_node('Amazon'),
-  desc: "link 1",
-  type: "new"
+  source: find_node('U1'),
+  target: find_node('R1'),
+  desc: "10Mbps",
+  type: "normal"
 }, {
-  source: find_node('Microsoft'),
-  target: find_node('Amazon'),
-  desc: "link 2",
+  source: find_node('U2'),
+  target: find_node('R2'),
+  desc: "10Mbps",
+  type: "normal"
+}, {
+  source: find_node('U3'),
+  target: find_node('R4'),
+  desc: "10Mbps",
+  type: "normal"
+}, {
+  source: find_node('R1'),
+  target: find_node('R2'),
+  desc: "100Mbps",
+  type: "normal"
+}, {
+  source: find_node('R2'),
+  target: find_node('R3'),
+  desc: "100Mbps",
+  type: "normal"
+}, {
+  source: find_node('R3'),
+  target: find_node('R4'),
+  desc: "Faulty",
   type: "down"
 }, {
-  source: find_node('Samsung'),
-  target: find_node('Apple'),
-  desc: "I am your father",
-  type: "suit"
-}, {
-  source: find_node('Microsoft'),
-  target: find_node('Amazon'),
-  desc: "link 3",
+  source: find_node('R1'),
+  target: find_node('R3'),
+  desc: "Slow...",
   type: "overload"
+}, {
+  source: find_node('R1'),
+  target: find_node('R3'),
+  desc: "10Mbps",
+  type: "normal"
 }];
 
 update_data();
@@ -116,8 +137,12 @@ function tick() {
     var dx = d.target.x - d.source.x,
       dy = d.target.y - d.source.y,
 //      dr = 75 / d.linknum; //linknum is defined above
-      dr = Math.sqrt(dx * dx + dy * dy) * 3/ d.linknum; //linknum is defined above
-    return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+      dr = Math.sqrt(dx * dx + dy * dy) * 2 / d.linknum; //linknum is defined above
+    if (d.linknum === 1){
+      return "M" + d.source.x + "," + d.source.y + "L"  + d.target.x + "," + d.target.y;
+    } else {
+      return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+    };
   });
 
   nodegroup.selectAll("circle").attr("transform", function(d) {
@@ -197,10 +222,10 @@ function update_graph(){
     .attr("name", function(d){ return d.source.name + '_' + d.target.name + '_' + d.linknum })
     .attr("class", function(d) {
       return "link " + d.type;
-    })
-    .attr("marker-end", function(d) {
-      return "url(#" + d.type + ")";
     });
+//    .attr("marker-end", function(d) {
+//      return "url(#" + d.type + ")";
+//    });
   path.exit()
       .remove()
 
@@ -288,6 +313,17 @@ function update_data(){
     }
   });
 
+  //sort nodes by name
+  nodes.sort(function(a, b) {
+    if (a.name > b.name) {
+      return 1;
+    } else if (a.name < b.name) {
+      return -1;
+    } else {
+      return 0;
+    }
+  });
+  
   //any links with duplicate source and target get an incremented 'linknum'
   for (var i = 0; i < links.length; i++) {
     if (i != 0 &&
