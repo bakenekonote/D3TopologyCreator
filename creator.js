@@ -24,12 +24,12 @@ var links = [{
   source: find_node('Microsoft'),
   target: find_node('Amazon'),
   desc: "link 1",
-  type: "licensing"
+  type: "new"
 }, {
   source: find_node('Microsoft'),
   target: find_node('Amazon'),
   desc: "link 2",
-  type: "suit"
+  type: "down"
 }, {
   source: find_node('Samsung'),
   target: find_node('Apple'),
@@ -39,7 +39,7 @@ var links = [{
   source: find_node('Microsoft'),
   target: find_node('Amazon'),
   desc: "link 3",
-  type: "resolved"
+  type: "overload"
 }];
 
 update_data();
@@ -59,13 +59,13 @@ var svg = d3.select("#drawhere").append("svg:svg")
   .attr("width", w)
   .attr("height", h);
 
-var linkgroup = svg.append("svg:g")
-var nodegroup = svg.append("svg:g")
+var linkgroup = svg.append("svg:g");
+var nodegroup = svg.append("svg:g");
 
 
 // Per-type markers, as they don't inherit styles.
 svg.append("svg:defs").selectAll("marker")
-  .data(["suit", "licensing", "resolved"])
+  .data(["new", "down", "overload"])
   .enter().append("svg:marker")
   .attr("id", String)
   .attr("viewBox", "0 -5 10 10")
@@ -76,6 +76,23 @@ svg.append("svg:defs").selectAll("marker")
   .attr("orient", "auto")
   .append("svg:path")
   .attr("d", "M0,-5L10,0L0,5");
+
+// add a free flow button
+svg.append("svg:rect")
+  .attr("x", 10)
+  .attr("y", 10)
+  .attr("width", 50)
+  .attr("height", 20)
+  .attr("rx", 1)
+  .attr("ry", 1)
+  .on("click", freeflow);
+
+  // add a free flow button
+svg.append("svg:text")
+  .attr("x", 13)
+  .attr("y", 23)
+  .text("Free Flow")
+  .on("click", freeflow);
 
 var path = linkgroup.selectAll("path");
 var circle = nodegroup.selectAll("circle");
@@ -162,9 +179,10 @@ function removeNode(key){
   update_link_select();
 }
 
-function removeLink(src, tgt){
+function removeLink(src, tgt, linknum){
+  console.log("Remove Link:" + src + " " + tgt + " " + linknum);
   links = links.filter(function(link){
-    return (link.source.name != src && link.target.name != tgt)
+    return !(link.source.name === src && link.target.name === tgt && link.linknum === parseInt(linknum));
   });
   update_graph();
   update_node_table();
@@ -225,7 +243,7 @@ function update_graph(){
 function update_node_table(){
   $("#tbody_nodes").empty();
   for (var key in nodes) {
-        $("#tbody_nodes").append('<tr><td>' + nodes[key].name + '</td><td><button type="button" class="btn btn-danger btn-sm" onclick=\'removeNode("'+nodes[key].name+'")\'>Remove</button></td></tr>');
+        $("#tbody_nodes").append('<tr><td>' + nodes[key].name + '</td><td><span class="glyphicon glyphicon-remove" onclick=\'removeNode("'+nodes[key].name+'")\'></span></td></tr>');
   };
 }
 
@@ -235,7 +253,7 @@ function update_link_table(){
         $("#tbody_links").append('<tr><td>' + links[key].source.name
         + '</td><td>'+ links[key].target.name
         + '</td><td>'+ links[key].desc
-        + '</td><td><button type="button" class="btn btn-danger btn-sm" onclick=\'removeLink("'+links[key].source.name+'","'+links[key].target.name+'")\'>Remove</button></td></tr>');
+        + '</td><td><span class="glyphicon glyphicon-remove"onclick=\'removeLink("'+links[key].source.name+'","'+links[key].target.name+'",'+links[key].linknum+')\'></span></td></tr>');
   };
 }
 
@@ -298,10 +316,8 @@ function dragend(d, i) {
 }
 
 function writedata(){
-  force.stop();
-  var jsondump = JSON.stringify({nodes: nodes, links: links});
+  var jsondump = JSON.minify({nodes: nodes, links: links});
   $("#data_textarea").val(jsondump);
-  force.resume();
 }
 
 function readdata(){
@@ -336,6 +352,13 @@ function freeflow(){
   for (var j = 0; j < nodes.length; j++) {
     nodes[j].fixed = false;
   };
-  force.resume();
   force.start();
+}
+
+function hideread(){
+  $('#jsonreadbutton').addClass("hidden");
+}
+
+function showread(){
+  $('#jsonreadbutton').removeClass("hidden");
 }

@@ -4,15 +4,15 @@ path.link {
   stroke-width: 1.5px;
 }
 
-marker#licensing {
+marker#new {
   fill: green;
 }
 
-path.link.licensing {
+path.link.new {
   stroke: green;
 }
 
-path.link.resolved {
+path.link.down {
   stroke-dasharray: 0, 2 1;
 }
 
@@ -31,4 +31,19 @@ text.shadow {
   stroke: #fff;
   stroke-width: 3px;
   stroke-opacity: .8;
+}
+
+rect {
+  fill: white;
+  stroke: #666;
+  stroke-width: 1.5px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: black;
 }
