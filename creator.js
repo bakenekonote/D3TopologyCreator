@@ -65,7 +65,7 @@ var nodegroup = svg.append("svg:g");
 
 // Per-type markers, as they don't inherit styles.
 svg.append("svg:defs").selectAll("marker")
-  .data(["new", "down", "overload"])
+  .data(["normal", "down", "overload"])
   .enter().append("svg:marker")
   .attr("id", String)
   .attr("viewBox", "0 -5 10 10")
@@ -115,7 +115,8 @@ function tick() {
   linkgroup.selectAll("path").attr("d", function(d) {
     var dx = d.target.x - d.source.x,
       dy = d.target.y - d.source.y,
-      dr = 75 / d.linknum; //linknum is defined above
+//      dr = 75 / d.linknum; //linknum is defined above
+      dr = Math.sqrt(dx * dx + dy * dy) * 3/ d.linknum; //linknum is defined above
     return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
   });
 
@@ -131,7 +132,7 @@ function tick() {
 function addNode(){
   console.log("addNode: " + $("#node_text").val());
   if (find_node($("#node_text").val()) === null) {
-    nodes.push({ name: $("#node_text").val(), x:d3.randomUniform(0, w), y:d3.randomUniform(0, h)});
+    nodes.push({ name: $("#node_text").val(), type: $("#node_type").val(), x:d3.randomUniform(0, w), y:d3.randomUniform(0, h)});
     update_data();
     update_graph();
     update_node_table();
@@ -149,12 +150,11 @@ function addLink(){
     source: src_node,
     target: tgt_node,
     desc: desc,
-    type: "licensing"
+    type: "normal"
   });
   update_data();
   update_graph();
   update_node_table();
-  update_link_select();
   update_link_table();
 }
 
@@ -208,6 +208,9 @@ function update_graph(){
   circle.enter()
     .append("svg:circle")
     .attr("r", 6)
+    .attr("class", function(d){
+      return "node " + d.type;
+    })
     .attr("name", function(d) {
       return d.name;
     })
@@ -243,7 +246,7 @@ function update_graph(){
 function update_node_table(){
   $("#tbody_nodes").empty();
   for (var key in nodes) {
-        $("#tbody_nodes").append('<tr><td>' + nodes[key].name + '</td><td><span class="glyphicon glyphicon-remove" onclick=\'removeNode("'+nodes[key].name+'")\'></span></td></tr>');
+        $("#tbody_nodes").append('<tr><td>' + nodes[key].name + '</td><td>' + nodes[key].type + '</td><td><span class="glyphicon glyphicon-remove" onclick=\'removeNode("'+nodes[key].name+'")\'></span></td></tr>');
   };
 }
 
@@ -316,7 +319,7 @@ function dragend(d, i) {
 }
 
 function writedata(){
-  var jsondump = JSON.minify({nodes: nodes, links: links});
+  var jsondump = JSON.stringify({nodes: nodes, links: links});
   $("#data_textarea").val(jsondump);
 }
 

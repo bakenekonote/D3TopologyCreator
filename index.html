@@ -87,10 +87,20 @@
             <div id = 'nodespane' class="tab-pane fade in active">
               <div class="row">
                 <div class="col-sm-10">
-                  <div class="form-group">
+                  <div class="form-group col-sm-4">
                     <label for="node_text">Node Name:</label>
-                    <input type="text" class="form-control" id="node_text"/>
-                    <button type="button" class="btn" onclick="addNode()">Add Node</button>
+                    <input type="text" class="input-sm form-control" id="node_text"/>
+                  </div>
+                  <div class="form-group col-sm-4">
+                    <label for="node_type">Node Type:</label>
+                    <select class="select input-sm form-control" id="node_type">
+                      <option value="mx">MX</option>
+                      <option value="ubuntu">Ubuntu</option>
+                      <option value="bridge">bridge</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-sm-2">
+                    <button type="button" class="btn btn-sm" onclick="addNode()">Add Node</button>
                   </div>
                 </div>
                 <div class="col-sm-10">
@@ -98,6 +108,7 @@
                     <thead>
                       <tr>
                         <th>Node Name</th>
+                        <th>Type</th>
                         <th>Action</th>
                       </tr>
                     </thead>

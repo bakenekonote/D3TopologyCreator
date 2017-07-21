@@ -4,12 +4,12 @@ path.link {
   stroke-width: 1.5px;
 }
 
-marker#new {
-  fill: green;
+marker#normal {
+  fill: blue;
 }
 
-path.link.new {
-  stroke: green;
+path.link.normal {
+  stroke: blue;
 }
 
 path.link.down {
@@ -20,6 +20,14 @@ circle {
   fill: #ccc;
   stroke: #333;
   stroke-width: 1.5px;
+}
+
+circle.node.mx{
+  fill: blue
+}
+
+circle.node.ubuntu{
+  fill: green
 }
 
 text {
